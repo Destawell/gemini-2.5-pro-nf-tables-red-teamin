@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="PASTE_YOUR_VERIFICATION_TOKEN_HERE" />
+    
+    <title>Case Study: Gemini 2.5 Pro Safety Alignment Evolution on CVE-2023-32233</title>
+    
+    <meta name="description" content="Technical case study mapping the behavior shifts, safety alignment parameters, and refusal guardrails of Google Gemini 2.5 Pro regarding Linux kernel primitives (CVE-2023-32233).">
+    <meta name="keywords" content="Destawell, Niranj-coder, AI Safety, Gemini 2.5 Pro, CVE-2023-32233, Red Teaming, Linux Kernel, Refusal Alignment">
+    <meta name="author" content="Niranj-coder">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "TechArticle",
+          "@id": "https://github.io/#article",
+          "headline": "Case Study: Documenting Gemini 2.5 Pro's Safety Alignment & Refusal Evolution on CVE-2023-32233",
+          "description": "An analysis of frontier LLM guardrails tracking behavioral modification and refusal vectors on legacy memory corruption vulnerabilities.",
+          "inLanguage": "en",
+          "mainEntityOfPage": "https://github.com/Destawell/gemini-2.5-pro-nf-tables-red-teaming",
+          "datePublished": "2026-05-22",
+          "keywords": "AI Safety, Red Teaming, CVE-2023-32233, Linux Kernel, Vulnerability Research",
+          "author": {
+            "@type": "Person",
+            "name": "Niranj-coder",
+            "jobTitle": "Security Developer & Vulnerability Researcher",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Destawell",
+              "url": "https://github.com/Destawell"
+            },
+            "knowsAbout": ["Cybersecurity", "AI Safety", "Ethical Hacking", "OSINT", "Linux Kernel Security"]
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Destawell",
+            "url": "https://github.com/Destawell"
+          }
+        },
+        {
+          "@type": "Person",
+          "name": "Niranj-coder",
+          "alternateName": "Niranj R Mahaswar",
+          "jobTitle": "Security Developer & Vulnerability Researcher",
+          "memberOf": {
+            "@type": "Organization",
+            "name": "Destawell"
+          },
+          "knowsAbout": ["Computer Engineering", "Vulnerability Research", "LLM Alignment", "Network Auditing"]
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --quote-bg: #1f242c;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #ffffff;
+            font-size: 2rem;
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+        .meta {
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+        .tag {
+            background: #21262d;
+            border: 1px solid var(--border-color);
+            color: var(--accent-color);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+        article {
+            font-size: 1.1rem;
+        }
+        p { margin: 0 0 20px 0; }
+        ul { margin: 0 0 20px 0; padding-left: 20px; }
+        li { margin-bottom: 8px; }
+        blockquote {
+            background-color: var(--quote-bg);
+            border-left: 4px solid var(--accent-color);
+            margin: 0 0 20px 0;
+            padding: 15px;
+            border-radius: 0 6px 6px 0;
+        }
+        blockquote p { margin: 0; color: #f0f6fc; }
+        
+        /* Researcher Profile Styling */
+        .profile-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+        .profile-card h3 {
+            margin-top: 0;
+            color: #ffffff;
+        }
+
+        .btn-link {
+            display: inline-block;
+            background-color: #238636;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 20px 0;
+            transition: background 0.2s;
+        }
+        .btn-link:hover {
+            background-color: #2ea043;
+        }
+        footer {
+            margin-top: 50px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            text-align: center;
+            color: #8b949e;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <span class="tag">Security Research</span><span class="tag">AI Safety</span>
+        <h1>Case Study: Documenting Gemini 2.5 Pro's Safety Alignment & Refusal Evolution on CVE-2023-32233</h1>
+        <div class="meta">Published: May 2026 • By Destawell Security Research</div>
+    </header>
+
+    <main>
+        <section class="profile-card">
+            <h3>About the Researcher</h3>
+            <p>This tracking case study was developed by <strong>Niranj-coder</strong>, a Security Developer and Vulnerability Researcher associated with the <strong>Destawell</strong> brand. Currently pursuing a degree in Computer Engineering, his background spans ethical hacking, Open Source Intelligence (OSINT), and technical network auditing.</p>
+            <p>Focusing on advanced AI safety alignment parameters, his research analyzes how modern LLM guardrails process complex Linux kernel exploit primitives, kernel memory corruption risks, and edge-case boundary restrictions under public vulnerability models.</p>
+        </section>
+
+        <article>
+            <h3>Introduction</h3>
+            <p>Evaluating the boundaries of modern frontier Large Language Models (LLMs) requires continuous monitoring of how defensive safety filters evolve against known public exploits. This technical case study maps the behavior shifts of Google's <strong>Gemini 2.5 Pro</strong> when dealing with structural requests regarding <strong>CVE-2023-32233</strong>.</p>
+            
+            <p>CVE-2023-32233 represents a prominent Use-After-Free vulnerability discovered within the Linux kernel <code>netfilter/nf_tables</code> subsystem, capable of permitting local privilege escalation. This research explicitly tracks how model responses changed over a multi-week observation cycle.</p>
+
+            <blockquote>
+                <p><strong>Responsible Disclosure & Safety Alignment:</strong> This project contains zero functional exploit code, weaponized vectors, or bypass frameworks. It is strictly a benchmarking dataset logging LLM boundary adjustments, guardrail mechanics, and the practical application of refusal alignment policies over time.</p>
+            </blockquote>
+
+            <h3>Research Focus Areas</h3>
+            <ul>
+                <li><strong>Contextual Processing Timeline:</strong> Evaluating model output variance between early April test runs and mid-May post-patch cycles.</li>
+                <li><strong>Refusal Vector Mapping:</strong> Analyzing structural patterns in how the model triggers safe-harbor responses when interacting with legacy Linux kernel subsystem primitives.</li>
+                <li><strong>Defensive Integrity Tracking:</strong> Documenting changes in model alignment behavior following rolling server-side updates.</li>
+            </ul>
+
+            <p>The complete open-source dataset, structured testing templates, log history, and analytical conclusions are fully documented on GitHub:</p>
+
+            <a href="https://github.com/Destawell/gemini-2.5-pro-nf-tables-red-teaming" class="btn-link" target="_blank" rel="noopener noreferrer">View Full Repository on GitHub</a>
+        </article>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Destawell. Managed educational security research tracking.</p>
+    </footer>
+</div>
+
+</body>
+</html>
